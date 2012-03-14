@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/plagiarism/db" VERSION="20120224" COMMENT="XMLDB file for Moodle local/plagiarism"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="plagiarism_settings" COMMENT="Default comment for the table, please edit me" NEXT="wn_synonyms">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="indepth"/>
+        <FIELD NAME="indepth" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" DECIMALS="5" COMMENT="The indepth analysis threshold" PREVIOUS="courseid" NEXT="jaccard"/>
+        <FIELD NAME="jaccard" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" DECIMALS="5" COMMENT="jaccard similarity threshold" PREVIOUS="indepth" NEXT="allowspelling"/>
+        <FIELD NAME="allowspelling" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="allow spelling correction, 0: not allow, 1: allow" PREVIOUS="jaccard" NEXT="valid"/>
+        <FIELD NAME="valid" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="0: not valid 1: valid" PREVIOUS="allowspelling" NEXT="checksynonyms"/>
+        <FIELD NAME="checksynonyms" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="0: do not check 1: check" PREVIOUS="valid" NEXT="wordngrams"/>
+        <FIELD NAME="wordngrams" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="the number of successive words we split the answers. To be used in candidate retrieval phase of plagiarism detection" PREVIOUS="checksynonyms"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="f_courseid"/>
+        <KEY NAME="f_courseid" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="wn_synonyms" COMMENT="wn_synonyms table retrofitted from MySQL" PREVIOUS="plagiarism_settings">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="wordno"/>
+        <FIELD NAME="wordno" TYPE="number" LENGTH="6" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" DECIMALS="0" PREVIOUS="id" NEXT="lemma"/>
+        <FIELD NAME="lemma" TYPE="char" LENGTH="80" NOTNULL="true" SEQUENCE="false" PREVIOUS="wordno" NEXT="synonyms"/>
+        <FIELD NAME="synonyms" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="lemma"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
